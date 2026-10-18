@@ -1,0 +1,41 @@
+# Mac / CPU-friendly variant of the course Dockerfile.
+# No CUDA base, no NVIDIA GPU — Docker on Apple Silicon can't access MPS,
+# so containers here are CPU-only. Run GPU work natively in your .venv instead.
+
+FROM python:3.12-slim
+
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python -m pip install --upgrade pip setuptools wheel
+
+# CPU builds of torch (the default PyPI wheels are CPU-only, and are
+# multi-arch so they work on Apple Silicon under emulation/arm64).
+RUN python -m pip install \
+    torch \
+    torchvision \
+    torchaudio
+
+RUN python -m pip install \
+    numpy \
+    pandas \
+    scikit-learn \
+    matplotlib \
+    jupyter \
+    transformers \
+    datasets \
+    accelerate \
+    safetensors \
+    qdrant-client
+
+WORKDIR /workspace
+
+EXPOSE 8888
+
+CMD ["python"]

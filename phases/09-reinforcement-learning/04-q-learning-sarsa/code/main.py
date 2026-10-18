@@ -97,7 +97,7 @@ def block_means(xs, block):
 
 
 def main():
-    episodes = 3000
+    episodes = 30000
     rng = random.Random(42)
     Q_sarsa, ret_sarsa = sarsa(episodes, rng=rng)
     rng = random.Random(42)

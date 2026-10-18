@@ -1,8 +1,31 @@
 import os
 import json
 import urllib.request
+from pathlib import Path
 
-MODEL = os.environ.get("LLM_MODEL", "claude-sonnet-5")
+
+def load_dotenv():
+    """Load KEY=VALUE lines from the nearest .env found by walking up from here.
+
+    Shell environment variables take precedence; blank lines and # comments are
+    skipped. Dependency-free so the script runs on a bare Python install.
+    """
+    for parent in [Path(__file__).resolve().parent, *Path(__file__).resolve().parents]:
+        env_path = parent / ".env"
+        if env_path.exists():
+            for raw in env_path.read_text().splitlines():
+                line = raw.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+            return env_path
+    return None
+
+
+load_dotenv()
+
+MODEL = os.environ.get("LLM_MODEL", "claude-sonnet-4-6")
 
 
 def call_with_sdk():

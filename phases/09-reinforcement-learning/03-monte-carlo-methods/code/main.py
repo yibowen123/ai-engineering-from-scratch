@@ -117,7 +117,7 @@ def print_policy(policy, title):
 
 def main():
     rng = random.Random(1)
-    V, counts = mc_policy_evaluation(uniform_policy, episodes=20000, gamma=0.99, rng=rng)
+    V, counts = mc_policy_evaluation(uniform_policy, episodes=100000, gamma=0.99, rng=rng)
     print(f"=== first-visit MC, uniform-random policy, 20000 episodes, gamma=0.99 ===")
     print_V(V, "V^pi(s)")
     print()
@@ -131,10 +131,10 @@ def main():
     print("=== epsilon-greedy MC control, 30000 episodes ===")
     print_policy(greedy, "greedy policy recovered")
     print()
-    tail = log[-5000:]
+    tail = log[-200:]
     if tail:
         mean_tail = sum(tail) / len(tail)
-        print(f"mean return over last 5000 episodes = {mean_tail:.2f}")
+        print(f"mean return over last 200 episodes = {mean_tail:.2f}")
         print("(optimal return on this 4x4 GridWorld = -6.0)")
 
 

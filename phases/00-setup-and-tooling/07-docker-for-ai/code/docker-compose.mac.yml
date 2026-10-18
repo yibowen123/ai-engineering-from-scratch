@@ -1,0 +1,32 @@
+# Mac / CPU-friendly variant of the course docker-compose.yml.
+# The GPU `deploy:` block is removed (no NVIDIA on Mac). Everything else runs
+# fine on Apple Silicon as CPU-only. The qdrant vector DB is unchanged — it was
+# always CPU/platform-agnostic.
+#
+# Run:  docker compose -f docker-compose.mac.yml up
+services:
+  ai-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.mac
+    # NOTE: no `deploy:` GPU block — Docker on Mac has no GPU passthrough.
+    volumes:
+      - ../../../:/workspace       # repo root -> /workspace
+      - ~/models:/models           # created empty on first run if missing
+      - ~/datasets:/data
+    ports:
+      - "8888:8888"
+    stdin_open: true
+    tty: true
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+
+  qdrant:
+    image: qdrant/qdrant:v1.12.5
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  qdrant_data:
