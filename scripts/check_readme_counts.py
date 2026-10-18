@@ -5,7 +5,7 @@ Requires Python 3.10+. Stdlib only.
 
 catalog.json is filesystem-truth (rebuilt by scripts/build_catalog.py in CI,
 or built ephemerally when the file is absent locally). The README, however,
-sprinkles hardcoded counts ("428 lessons", "373 skills, 99 prompts, ...") that
+sprinkles hardcoded counts (lesson totals, skill totals, prompt totals) that
 drift every time the curriculum grows or shrinks. This script pins each
 hardcoded count to a field in catalog.json's `totals` block and fails when they
 disagree.
@@ -73,16 +73,6 @@ PATTERNS: tuple[CountPattern, ...] = (
         description="hero blockquote phase count",
     ),
     CountPattern(
-        regex=re.compile(r"This curriculum is the spine\. (\d+) phases,"),
-        field="phases",
-        description="'spine' prose phase count",
-    ),
-    CountPattern(
-        regex=re.compile(r"This curriculum is the spine\. \d+ phases, (\d+) lessons,"),
-        field="lessons",
-        description="'spine' prose lesson count",
-    ),
-    CountPattern(
         regex=re.compile(r"phases-(\d+)-3553ff"),
         field="phases",
         description="phase-count badge URL",
@@ -91,11 +81,6 @@ PATTERNS: tuple[CountPattern, ...] = (
         regex=re.compile(r'alt="(\d+) phases"'),
         field="phases",
         description="phase-count badge alt text",
-    ),
-    CountPattern(
-        regex=re.compile(r"portfolio of (\d+) artifacts"),
-        field="lessons",
-        description="'portfolio of N artifacts' (one artifact per lesson)",
     ),
     CountPattern(
         regex=re.compile(r"The repo ships (\d+) skills"),

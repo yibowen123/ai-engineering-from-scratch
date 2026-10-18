@@ -1,15 +1,26 @@
 # Sponsorship
 
-`ai-engineering-from-scratch` is a free, MIT-licensed curriculum. 428 lessons across 20
+`ai-engineering-from-scratch` is a free, MIT-licensed curriculum. 542 lessons across 20
 phases. The work is built and maintained by [Rohit Ghumare](https://github.com/rohitg00).
 
-Sponsorships fund the time it takes to ship lessons, keep the site running, and reply to the
-issue queue. Cash only. Credits-in-kind, equity, or "we'll write your content" arrangements
-are not accepted, see [Hard rules](#hard-rules) below.
+Cash sponsorships fund the time it takes to ship lessons, keep the site running, and reply
+to the issue queue. Production hardware is considered separately under the
+[Hardware Lab Partner](#hardware-lab-partner) policy. Service credits, equity, or
+"we'll write your content" arrangements are not accepted. See [Hard rules](#hard-rules).
 
 If you or your company want to support the curriculum, this page is the rate card.
 
+## Sponsor
+
+| Sponsor | Description |
+|---|---|
+| <a href="https://serpapi.com/ai-engineering-from-scratch"><picture><source media="(prefers-color-scheme: dark)" srcset="https://serpapi.com/assets/media_kit/logo-with-wordmark-white.svg"><img src="https://serpapi.com/assets/media_kit/logo-with-wordmark.svg" alt="SerpApi" width="180"></picture></a> | Web Search API for your AI apps. Available in Markdown and JSON for any integration. |
+| <a href="https://nitrostack.ai/referral/aiengineeringfromscratch"><img src="https://nitrostack.ai/logo.png" alt="NitroStack" width="56"></a> **NitroStack** | An end-to-end development platform for building, testing, debugging, and deploying production-ready MCP servers and applications. |
+
 ## How to sponsor
+
+Sponsor names, logos, links, and tier assignments are managed by the maintainer.
+Sponsorship changes are not accepted through contributor pull requests.
 
 - **GitHub Sponsors:** [github.com/sponsors/rohitg00](https://github.com/sponsors/rohitg00)
 
@@ -23,24 +34,35 @@ anything else using this project's name is unaffiliated.
 
 ## Reach
 
-These are real numbers, not pitch decks. Verified 2026-05-14 from the official analytics
-dashboard, screenshots available on request.
+These are real numbers, not pitch decks. Website figures come from the production
+[Vercel Web Analytics](https://vercel.com/docs/analytics) dashboard. GitHub figures come
+from the repository traffic API, which reports the last 14 days. Newsletter figures come
+from the Substack dashboard. All figures were verified 2026-10-07.
 
-| Window | Visitors | Page views | Growth |
-|---|---|---|---|
-| Last 7 days | 33,569 | 53,917 | +450% / +399% |
-| Last 30 days | 55,593 | 90,709 | +335% / +403% |
+| Channel | Window | Figure |
+|---|---|---:|
+| Website page views | last 30 days | 521,690 |
+| [AI Engineering Newsletter](https://thatdevopsguy.substack.com) subscribers | all time | 11,000+ |
+| GitHub repository views | 2026-09-22 to 2026-10-05 | 280,632 |
+| GitHub repository views, 30-day rate | estimate from the 14-day figure | about 601,000 |
+| GitHub unique visitors | 2026-09-22 to 2026-10-05 | 72,761 |
+| GitHub clones | 2026-09-22 to 2026-10-05 | 20,228 (5,625 unique) |
+| GitHub stars | all time | 65,223 |
+| GitHub forks | all time | 11,242 |
 
-- **GitHub stars:** 7,500+ and growing
-- **Top referrers (30d):** X / Twitter (18K), Google (7.1K), GitHub (5.3K), Instagram (1.2K),
-  Brave (505), LinkedIn (470)
-- **Top pages:** `/` (63K views), `/index.html` (15K), `/prereqs.html` (5.5K),
-  `/catalog.html` (4.9K), `/glossary.html` (2K)
-- **Cross-platform amplification:** Twitter/X is the #1 acquisition channel; Gold and
-  Platinum sponsors get co-amplified on the same channel via release-note threads.
+- **Top GitHub referrers, last 14 days:** GitHub (28.0K), LinkedIn (15.6K across web and
+  app), Google (9.2K), the course website (5.8K), X / t.co (5.4K), Threads (4.0K)
+- **Top GitHub pages, last 14 days:** the README (108K views), the Chinese README (8.1K),
+  Phase 0 setup (4.8K)
 
-A sponsor placement at this scale is in the same range as a paid slot in a 50-100K monthly
-dev newsletter or a mid-tier independent dev blog.
+GitHub reports traffic for 14 days only. At the same daily rate, the repository draws
+about 601,000 views in 30 days, more than the website. Across both, the project draws
+more than 1.1 million views a month. The AI Engineering Newsletter sends a weekly issue
+on AI to more than 11,000 subscribers. Gold, Platinum, and Diamond sponsors also receive
+the cross-platform co-features defined in the tier ladder below.
+
+A sponsor placement at this scale is in the same range as a paid slot in a dev publication
+with one million monthly page views.
 
 ## Tier ladder
 
@@ -51,13 +73,24 @@ dev newsletter or a mid-tier independent dev blog.
 | **Silver** | $750 | 6 months | Small logo (max 120×40) in the README sponsor row, listed as one supported provider in API lessons where applicable, quarterly thank-you in release notes |
 | **Gold** | $2,000 | 6 months | Medium logo (max 200×60) in README + dedicated row on the sponsor page of the curriculum site + one X / LinkedIn co-feature per quarter |
 | **Platinum** | $5,000 | 12 months, max 1 partner | Hero logo above the fold + named in every release-notes post for the term + one dedicated integration lesson under Phase 11 or Phase 14, written by the maintainer to the same editorial standard as the rest of the curriculum |
-
-Diamond / Title tiers ($10,000+/mo) are not offered today. Reasonable to revisit once
-monthly visitors clear 250K or there is verified Fortune-500 enterprise dependency.
+| **Diamond / Title Partner** | $10,000 | 12 months, max 1 partner | Sole title-partner placement in the README sponsor block and sponsor page + hero logo above the fold + named in every release-notes post + one maintainer-written integration lesson + quarterly audience report and X / LinkedIn co-feature |
 
 Pricing is calibrated against the public sponsor pages of comparable open-source
-projects, the analytics above, and standard dev-blog sponsor rates at the 50-100K monthly
+projects, the analytics above, and standard dev-blog sponsor rates at the 100-250K monthly
 visitor scale (see [Pricing anchors](#pricing-anchors) below).
+
+## Hardware Lab Partner
+
+Hardware companies can sponsor the course by gifting production GPUs, AI workstations,
+storage, networking, or edge systems. The hardware becomes the maintainer's property on
+delivery.
+
+Gifted hardware may be used, modified, benchmarked, repurposed, or retired as needed for
+lessons and repository work. The provider receives up to 12 months of Hardware Lab Partner
+recognition on the sponsor page and in relevant work. Hardware does not automatically grant
+a cash sponsorship tier.
+
+Contact the [maintainer](https://github.com/rohitg00) before shipping hardware.
 
 ## Hard rules
 
@@ -82,9 +115,9 @@ These rules are non-negotiable. Sponsors who cannot accept them are politely dec
    curriculum principles (closed-loop vibe-coding tools, vendor lock-in evangelism, agent
    products that ignore observability or refuse to ship with open formats). Refusal is at
    the maintainer's sole discretion.
-7. **Cash only.** Credits-in-kind, equity, free hardware, "we'll do your DevRel for you,"
-   and bundle deals are not accepted. They are too easy to undervalue and too hard to
-   account for cleanly.
+7. **Cash or approved hardware only.** Service credits, equity, "we'll do your DevRel for
+   you," sponsor-authored content, and bundle deals are not accepted. Hardware must follow
+   the written Hardware Lab Partner policy above.
 
 ## Counter-proposals from prospective sponsors
 
@@ -97,8 +130,9 @@ will end with a link back to this page.
 ## Pricing anchors
 
 The tier amounts above are anchored against (a) public sponsor pages of comparable
-open-source projects, and (b) standard sponsor-slot rates for 50-100K monthly visitor dev
-publications. Verified 2026-05.
+open-source projects, and (b) standard sponsor-slot rates for dev publications at one
+million monthly page views across channels. Audience figures and GitHub stars verified
+2026-10-07.
 
 Comparable open-source rate cards:
 
@@ -111,10 +145,12 @@ Comparable open-source rate cards:
   Platinum ($2,000). Defensible at the curriculum's monthly traffic.
 - **$2,000 Gold** matches Babel Base Support (billed yearly at $24K = $2K/mo) and Vue
   Platinum.
-- **$5,000 Platinum** matches Vue Diamond. At 7.5K stars + 55K monthly visitors + the
-  current growth slope, the dedicated lesson + hero placement is what justifies the price.
-- **Diamond / Title ($10K+)** is skipped. Reasonable to revisit once monthly visitors
-  clear 250K.
+- **$5,000 Platinum** matches Vue Diamond. At 65.2K stars + 521.7K monthly page views, the
+  dedicated lesson + hero placement is what justifies the price.
+- **$10,000 Diamond / Title Partner** is one exclusive annual slot. The rate reflects
+  65.2K stars, 11.2K forks, 521.7K website page views in 30 days, 280.6K repository views
+  in 14 days (about 601K a month), title placement, quarterly reporting, and the
+  maintainer-written integration work.
 
 ## What sponsorship pays for
 
@@ -135,6 +171,9 @@ Listed in order of how the next dollar gets spent:
    you want it linked to, and the term length you've committed to.
 4. The logo lands in the next site deploy, usually within 48 hours.
 5. Receipts and invoices are issued by GitHub Sponsors automatically.
+
+Hardware partners follow the separate [Hardware Lab Partner](#hardware-lab-partner)
+process and must agree to written terms before shipping equipment.
 
 ## Becoming an ex-sponsor
 

@@ -16,9 +16,9 @@
     ]));
   }
   function anim(attr, vals, dur, extra) {
-    var a = { attributeName: attr, values: vals, dur: dur, repeatCount: 'indefinite' };
+    var a = { attributeName: attr, values: vals, dur: dur };
     if (extra) for (var k in extra) a[k] = extra[k];
-    return svgEl('animate', a);
+    return LF.smil('animate', a);
   }
   function txt(x, y, s, size, fill, anchor) {
     var t = svgEl('text', { x: x, y: y, 'text-anchor': anchor || 'middle', 'font-family': 'var(--font-mono,monospace)', 'font-size': size || '11', fill: fill || 'var(--ink,#1a1a1a)' });
@@ -80,13 +80,14 @@
     }
     for (i = 0; i < n; i++) {
       var cx = 30 + gap * i;
-      var box = svgEl('rect', { x: cx - 30, y: 70, width: 60, height: 40, rx: '4', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' });
-      box.appendChild(anim('fill', 'var(--bg-surface,#eee);var(--blueprint,#3553ff);var(--bg-surface,#eee)', '2.5s', { begin: (i * 0.5) + 's' }));
-      svg.appendChild(box);
+      svg.appendChild(svgEl('rect', { x: cx - 30, y: 70, width: 60, height: 40, rx: '4', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' }));
+      var lit = svgEl('rect', { x: cx - 30, y: 70, width: 60, height: 40, rx: '4', fill: 'var(--blueprint,#3553ff)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5', opacity: '0' });
+      lit.appendChild(anim('opacity', '0;1;0', '2.5s', { begin: (i * 0.5) + 's' }));
+      svg.appendChild(lit);
       svg.appendChild(txt(cx, 94, labels[i], '9', 'var(--ink,#1a1a1a)'));
     }
     var pulse = svgEl('circle', { cx: '0', cy: '90', r: '5', fill: 'var(--warn,#b8870f)' });
-    pulse.appendChild(svgEl('animateMotion', { dur: '2.5s', repeatCount: 'indefinite', path: 'M30 90 H490', keyPoints: '0;1', keyTimes: '0;1', calcMode: 'linear' }));
+    pulse.appendChild(LF.smil('animateMotion', { dur: '2.5s', path: 'M30 90 H490', keyPoints: '0;1', keyTimes: '0;1', calcMode: 'linear' }));
     svg.appendChild(pulse);
     svg.appendChild(txt(260, 160, 'output of each call becomes input to the next', '10', 'var(--ink-mute,#777)'));
     shell(host, 'PROMPT CHAINING', 'one call feeds the next',
@@ -113,7 +114,7 @@
     function msg(path, dur, begin, color) {
       var c = svgEl('circle', { cx: '0', cy: '0', r: '6', fill: color || 'var(--blueprint,#3553ff)' });
       c.appendChild(svgEl('animateMotion', { dur: dur, begin: begin, repeatCount: 'indefinite', path: path, keyPoints: '0;1', keyTimes: '0;1', calcMode: 'linear' }));
-      c.appendChild(anim('opacity', '0;1;1;0', dur, { begin: begin }));
+      c.appendChild(anim('opacity', '0;1;1;0', dur, { begin: begin, repeatCount: 'indefinite' }));
       return c;
     }
     svg.appendChild(msg('M150 60 H370', '1.6s', '0s'));
@@ -170,12 +171,14 @@
     svg.appendChild(field);
     svg.appendChild(txt(70, 88, 'search...', '11', 'var(--ink-mute,#777)', 'start'));
     var btn = svgEl('rect', { x: 60, y: 130, width: 90, height: 30, rx: '4', fill: 'var(--bg-surface,#eee)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5' });
-    btn.appendChild(anim('fill', 'var(--bg-surface,#eee);var(--bg-surface,#eee);var(--blueprint,#3553ff);var(--bg-surface,#eee)', '5s', {}));
     svg.appendChild(btn);
+    var press = svgEl('rect', { x: 60, y: 130, width: 90, height: 30, rx: '4', fill: 'var(--blueprint,#3553ff)', stroke: 'var(--blueprint,#3553ff)', 'stroke-width': '1.5', opacity: '0' });
+    press.appendChild(anim('opacity', '0;0;1;0', '5s', {}));
+    svg.appendChild(press);
     svg.appendChild(txt(105, 150, 'submit', '11', 'var(--ink,#1a1a1a)'));
     var path = 'M400 50 L180 83 L180 83 L105 145 L105 145 L400 50';
     var cur = svgEl('path', { d: 'M0 0 L0 16 L4 12 L8 18 L11 16 L7 11 L13 11 Z', fill: 'var(--ink,#1a1a1a)', stroke: 'var(--bg,#fafaf5)', 'stroke-width': '0.8' });
-    cur.appendChild(svgEl('animateMotion', { dur: '5s', repeatCount: 'indefinite', path: path, keyPoints: '0;0.45;0.5;0.9;0.95;1', keyTimes: '0;0.35;0.45;0.75;0.85;1', calcMode: 'linear' }));
+    cur.appendChild(LF.smil('animateMotion', { dur: '5s', path: path, keyPoints: '0;0.45;0.5;0.9;0.95;1', keyTimes: '0;0.35;0.45;0.75;0.85;1', calcMode: 'linear' }));
     svg.appendChild(cur);
     svg.appendChild(txt(260, 222, 'screenshot in -> pixel coordinates out', '10', 'var(--ink-mute,#777)'));
     shell(host, 'COMPUTER USE', 'a cursor driving the screen',
@@ -192,8 +195,10 @@
     for (i = 0; i < stages.length; i++) {
       var x = 60 + i * 110;
       var b = svgEl('rect', { x: x, y: 150, width: 80, height: 30, rx: '4', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' });
-      b.appendChild(anim('fill', 'var(--bg-surface,#eee);var(--blueprint,#3553ff);var(--bg-surface,#eee)', '3.2s', { begin: (i * 0.6) + 's' }));
       svg.appendChild(b);
+      var lit = svgEl('rect', { x: x, y: 150, width: 80, height: 30, rx: '4', fill: 'var(--blueprint,#3553ff)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5', opacity: '0' });
+      lit.appendChild(anim('opacity', '0;1;0', '3.2s', { begin: (i * 0.6) + 's' }));
+      svg.appendChild(lit);
       svg.appendChild(txt(x + 40, 169, stages[i], '10', 'var(--ink,#1a1a1a)'));
       if (i < stages.length - 1) {
         var ar = svgEl('line', { x1: x + 80, y1: 165, x2: x + 110, y2: 165, stroke: 'var(--ink-soft,#555)', 'stroke-width': '1.4', 'stroke-dasharray': '4 3' });
@@ -210,7 +215,7 @@
     svg.appendChild(wave);
     var word = txt(370, 84, '"hello"', '20', 'var(--ink,#1a1a1a)');
     word.setAttribute('opacity', '0');
-    word.appendChild(anim('opacity', '0;0;1;1;0', '3.2s', {}));
+    word.appendChild(anim('opacity', '0;0;1;1', '3.2s', { fill: 'freeze' }));
     svg.appendChild(word);
     svg.appendChild(txt(260, 208, 'end-to-end latency budget ~600ms', '10', 'var(--ink-mute,#777)'));
     shell(host, 'VOICE PIPELINE', 'audio frames into speech',
@@ -225,8 +230,9 @@
     svg.appendChild(svgEl('rect', { x: 30, y: 40, width: 150, height: 100, rx: '5', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' }));
     svg.appendChild(txt(105, 34, 'retrieved doc', '10', 'var(--ink-mute,#777)'));
     svg.appendChild(txt(105, 70, 'normal text...', '10', 'var(--ink-soft,#555)'));
-    var bad = svgEl('rect', { x: 42, y: 88, width: 126, height: 24, rx: '3', fill: 'var(--bg,#fafaf5)', stroke: 'var(--warn,#b8870f)', 'stroke-width': '1.5' });
-    bad.appendChild(anim('stroke', 'var(--rule-soft,#ddd);var(--warn,#b8870f);var(--rule-soft,#ddd)', '2.6s', {}));
+    svg.appendChild(svgEl('rect', { x: 42, y: 88, width: 126, height: 24, rx: '3', fill: 'var(--bg,#fafaf5)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' }));
+    var bad = svgEl('rect', { x: 42, y: 88, width: 126, height: 24, rx: '3', fill: 'none', stroke: 'var(--warn,#b8870f)', 'stroke-width': '1.5', opacity: '0' });
+    bad.appendChild(anim('opacity', '0;1;0', '2.6s', {}));
     svg.appendChild(bad);
     var badt = txt(105, 104, '<send funds>', '9', 'var(--warn,#b8870f)');
     badt.appendChild(anim('opacity', '0.4;1;0.4', '2.6s', {}));
@@ -262,9 +268,11 @@
     for (i = 0; i < labels.length; i++) {
       var x = 50 + i * 120;
       var b = svgEl('rect', { x: x, y: 90, width: 90, height: 44, rx: '5', fill: 'var(--bg-surface,#eee)', stroke: 'var(--rule-soft,#ddd)', 'stroke-width': '1.5' });
-      b.appendChild(anim('stroke', 'var(--rule-soft,#ddd);var(--warn,#b8870f)', '3s', { begin: (i * 0.7) + 's', fill: 'freeze' }));
-      b.appendChild(anim('fill', 'var(--bg-surface,#eee);var(--bg-surface,#eee);var(--warn,#b8870f)', '3s', { begin: (i * 0.7) + 's', fill: 'freeze' }));
       svg.appendChild(b);
+      var hit = svgEl('rect', { x: x, y: 90, width: 90, height: 44, rx: '5', fill: 'var(--warn,#b8870f)', 'fill-opacity': '0', stroke: 'var(--warn,#b8870f)', 'stroke-opacity': '0', 'stroke-width': '1.5' });
+      hit.appendChild(anim('stroke-opacity', '0;1', '3s', { begin: (i * 0.7) + 's', fill: 'freeze' }));
+      hit.appendChild(anim('fill-opacity', '0;0;1', '3s', { begin: (i * 0.7) + 's', fill: 'freeze' }));
+      svg.appendChild(hit);
       svg.appendChild(txt(x + 45, 117, labels[i], '11', 'var(--ink,#1a1a1a)'));
       if (i < labels.length - 1) {
         var ln = svgEl('line', { x1: x + 90, y1: 112, x2: x + 120, y2: 112, stroke: 'var(--ink-soft,#555)', 'stroke-width': '1.4', 'stroke-dasharray': '4 3' });
@@ -272,7 +280,7 @@
       }
     }
     var bolt = svgEl('path', { d: 'M0 0 L-5 9 L1 9 L-3 18', fill: 'none', stroke: 'var(--warn,#b8870f)', 'stroke-width': '2.5', opacity: '0' });
-    bolt.appendChild(svgEl('animateMotion', { dur: '3s', repeatCount: 'indefinite', path: 'M95 75 L215 75 L335 75 L455 75', keyPoints: '0;0.33;0.66;1', keyTimes: '0;0.33;0.66;1', calcMode: 'linear' }));
+    bolt.appendChild(LF.smil('animateMotion', { dur: '3s', fill: 'freeze', path: 'M95 75 L215 75 L335 75 L455 75', keyPoints: '0;0.33;0.66;1', keyTimes: '0;0.33;0.66;1', calcMode: 'linear' }));
     bolt.appendChild(anim('opacity', '0;1;1;1', '3s', {}));
     svg.appendChild(bolt);
     svg.appendChild(txt(260, 50, 'a single bad step poisons everything downstream', '11', 'var(--warn,#b8870f)'));

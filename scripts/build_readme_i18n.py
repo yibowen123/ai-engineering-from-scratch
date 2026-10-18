@@ -1,23 +1,16 @@
 #!/usr/bin/env python3
-"""Build translated README files from the canonical English README.
+"""Maintain localized README files against the canonical English README.
 
-The README is mostly structure: a banner, badges, a 584-row lesson table, and
-HTML blocks. Only prose and headings are translated; every other byte is kept
-exactly, so a translation can never break the layout, the lesson table, or a
-link. The generator works by replacing only the translated line-spans in a copy
-of the original file, so a language with no translations round-trips to a
-byte-identical README (asserted on every run).
-
-Translations are hand-authored (highest quality for a landing page) and stored
-in scripts/readme_translations.py, keyed by the exact English block. Any block
-without a translation falls back to English.
+The historical span-based renderer remains available to help prepare drafts.
+Published localized READMEs are maintained as documents: this command checks their links, anchors, numeric
+facts, tables, and code instead of overwriting editorial revisions.
 
     python3 scripts/build_readme_i18n.py --dump     # list translatable blocks
-    python3 scripts/build_readme_i18n.py            # write i18n/<lang>/README.md
-    python3 scripts/build_readme_i18n.py --check     # fail if any output is stale
+    python3 scripts/build_readme_i18n.py            # sync stats and audit every locale
+    python3 scripts/build_readme_i18n.py --check     # fail on structural drift
 
-Output goes to i18n/<lang>/README.md and is committed to main (unlike the lesson
-translations, which live on the translations branch). English stays canonical.
+Full locale documents in i18n/<lang>/README.md are committed to main (unlike
+lesson translations on the translations branch). English stays canonical.
 """
 import argparse
 import re
@@ -98,8 +91,11 @@ def spans(text):
 
 # repo-root-relative link/image targets, excluding absolute URLs, anchors, and
 # paths that already point upward. Two capture groups: the opener and the target.
-_HTML_LINK = re.compile(r'((?:href|src)=")(?!https?://|/|#|mailto:|data:|\.\.?/)([^"]+)')
+_HTML_LINK = re.compile(r'((?:href|src|srcset)=")(?!https?://|/|#|mailto:|data:|\.\.?/)([^"]+)')
 _MD_LINK = re.compile(r'(\]\()(?!https?://|/|#|mailto:|data:|\.\.?/)([^)]+)')
+_HTML_ALT = re.compile(r'(\balt=")([^"]+)(")')
+_HTML_TEXT = re.compile(r'>([^<>]+)<')
+_PROTECTED_HTML_TEXT = frozenset({'Become a sponsor'})
 
 
 def localize_links(md):
@@ -123,6 +119,22 @@ def localize_links(md):
     return "\n".join(out)
 
 
+def translate_html(line, table):
+    """Translate mapped alt text and visible HTML text without changing markup."""
+    line = _HTML_ALT.sub(
+        lambda match: match.group(1) + table.get(match.group(2), match.group(2)) + match.group(3),
+        line,
+    )
+
+    def replace_text(match):
+        text = match.group(1)
+        if text in _PROTECTED_HTML_TEXT:
+            return match.group(0)
+        return '>' + table.get(text, text) + '<'
+
+    return _HTML_TEXT.sub(replace_text, line)
+
+
 def render(text, lang, translations):
     table = translations.get(lang, {})
     lines = text.split("\n")
@@ -133,14 +145,21 @@ def render(text, lang, translations):
             continue
         replacement = [sp["prefix"] + ln for ln in t.split("\n")]
         lines[sp["start"]:sp["end"]] = replacement
+    in_code = False
+    for index, line in enumerate(lines):
+        if FENCE.match(line):
+            in_code = not in_code
+            continue
+        if not in_code:
+            lines[index] = translate_html(table.get(line, line), table)
     return "\n".join(lines)
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--dump", action="store_true")
     ap.add_argument("--check", action="store_true")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
     text = README.read_text(encoding="utf-8")
 
     assert render(text, "en", {}) == text, "generator is not structure-lossless"
@@ -152,23 +171,42 @@ def main():
         print(f"\n{len(keys)} translatable blocks; round-trip identity OK", file=sys.stderr)
         return 0
 
-    from readme_translations import TRANSLATIONS, README_NOTE
+    from audit_readme_locales import (
+        FULL_LOCALES, check_document as audit_locale,
+        source_review_errors, sync_stats_facts,
+    )
+
+    review_errors = source_review_errors(text)
+    if review_errors:
+        for error in review_errors:
+            print(error, file=sys.stderr)
+        return 1
 
     stale = []
-    for lang in TRANSLATIONS:
-        note = README_NOTE.get(lang, "")
-        body = localize_links(render(text, lang, TRANSLATIONS))
-        content = f"{note}\n{body}" if note else body
+    for lang in FULL_LOCALES:
         dst = OUT_ROOT / lang / "README.md"
-        if args.check:
-            if not dst.is_file() or dst.read_text(encoding="utf-8") != content:
-                stale.append(lang)
-        else:
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            dst.write_text(content, encoding="utf-8")
-            print(f"wrote {dst.relative_to(ROOT)}")
-    if args.check and stale:
-        print(f"stale README translations: {stale}; run build_readme_i18n.py", file=sys.stderr)
+        if not dst.is_file():
+            stale.append(lang)
+            continue
+        original = dst.read_text(encoding="utf-8")
+        try:
+            content = original if args.check else sync_stats_facts(text, original)
+        except ValueError as exc:
+            stale.append(lang)
+            print(f"{lang}: {exc}", file=sys.stderr)
+            continue
+        errors = audit_locale(text, content, lang)
+        if errors:
+            stale.append(lang)
+            for error in errors:
+                print(f"{lang}: {error}", file=sys.stderr)
+        elif not args.check:
+            if content != original:
+                dst.write_text(content, encoding="utf-8")
+                print(f"synced stats in {dst.relative_to(ROOT)}")
+            print(f"preserved full {dst.relative_to(ROOT)}")
+    if stale:
+        print(f"README translations need review: {stale}", file=sys.stderr)
         return 1
     return 0
 

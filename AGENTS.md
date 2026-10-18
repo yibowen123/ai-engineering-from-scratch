@@ -2,13 +2,13 @@
 
 Operating manual for contributors and AI agents touching this repo. Read it before opening a PR.
 
-The repo is a curriculum, not a SaaS app. The lessons are the product. Every rule below keeps 435 lessons coherent over time.
+The repo is a curriculum, not a SaaS app. The lessons are the product. Every rule below keeps 542 lessons coherent over time.
 
 ---
 
 ## Philosophy
 
-435 lessons. 20 phases. Every algorithm built from raw math before a single framework gets imported. You write backprop, the tokenizer, the attention mechanism, and the agent loop by hand in Python, TypeScript, Rust, or Julia. Then you run the same operation through the production library so the framework stops being a black box. The "Build It / Use It" split is the spine. Each lesson ships a reusable artifact you can plug into your daily workflow.
+542 lessons. 20 phases. Every algorithm built from raw math before a single framework gets imported. You write backprop, the tokenizer, the attention mechanism, and the agent loop by hand in Python, TypeScript, Rust, or Julia. Then you run the same operation through the production library so the framework stops being a black box. The "Build It / Use It" split is the spine. Each lesson ships a reusable artifact you can plug into your daily workflow.
 
 ---
 
@@ -28,6 +28,17 @@ glossary/terms.md             # canonical term definitions
 site/
   build.js                    # parses README + ROADMAP + glossary -> data.js
   data.js                     # generated; rebuilt by CI on main push
+certifications/claude/
+  program.json                # program metadata, source policy, official links
+  tracks/*.json               # exam blueprint, ordered route, study plans
+  lessons/NN-slug/            # shared certification lesson contract
+  assessments/<exam-code>/    # original diagnostics and full mocks
+manuals/
+  AUTHORING.md                # manual contract: shape, figures, capture kit, prose limits
+  <id>/manual.json            # pinned subject, palette, parts and sections
+  <id>/sections/*.md          # one file per section
+  <id>/figures/*.svg          # static figures; figure kit sources in figures/src/
+  <id>/capture/               # offline capture kit and the records it wrote
 scripts/                      # automation
 .github/workflows/
   curriculum.yml              # invariant + auto-sync workflow
@@ -99,6 +110,97 @@ The `**Languages:**` field must match the languages with a `main.*` file in `cod
 
 Exactly 6 questions: 1 pre + 3 check + 2 post. `correct` is zero-indexed. The site renderer only understands this shape — legacy `q/choices/answer` schemas crash silently.
 
+Keep the distractors comparable in length to the correct option. When the correct answer is the longest by a wide margin, a reader can guess it without knowing the material. `scripts/check_quiz_bias.py --check` gates this, and `scripts/debias_quizzes.py` spreads the correct option across positions.
+
+### Claude certification contract
+
+Certification lessons under `certifications/claude/lessons/` follow the same
+documentation, quiz, diagram, dependency, and one-commit-per-lesson rules as
+phase lessons. Every certification lesson needs a runnable main file and at
+least five deterministic tests. Tracks reference stable lesson paths so one
+lesson can serve several credentials without duplication. Conceptual lessons
+still need practical work: use a scenario runner, policy scorer, artifact
+validator, approval simulator, threat-model checker, or evidence grader instead
+of artificial provider API code. A track may also reference an existing
+`phases/` lesson as an optional deep dive.
+
+Full-parity certification lessons use the same explain, manipulate, build,
+ship, and verify loop as the strongest phase lessons. Every certification
+lesson must include the exact sections `Interactive Lab`, `Practice Lab`,
+`Shipped Artifact`, `Verify It`, and `Capstone Connection`; embed a registered
+`figure` mechanism; ship at least one file under `outputs/`; and provide a
+runnable scenario, simulator, scorer, or artifact validator with tests. Code in
+a conceptual lesson must exercise the lesson's judgment. Do not add a fake API
+integration merely to satisfy the runnable surface. Governance lessons can use
+mock incidents, policy scorers, threat-model checks, ADR validation, approval
+workflows, or evidence-bundle graders.
+
+`program.json` owns the independent-course disclaimer, verification date, and
+official links. `prerequisites.json` owns the machine-readable certification
+lesson dependency graph. Every required track route must contain those internal
+prerequisites before the lesson that consumes them. Each file in `tracks/` owns
+one public exam blueprint, its exact domain weights, ordered lesson route,
+assessment declarations, and study plans.
+Exam facts must come from the current official guide. Product and model details
+must be dated and checked against current official documentation.
+
+Diagnostics and mocks use a separate assessment schema because they support
+multiple-response questions:
+
+```json
+{
+  "id": "claude-ccar-f-diagnostic",
+  "version": 1,
+  "track": "claude-ccar-f",
+  "kind": "diagnostic",
+  "title": "Architect Foundations Diagnostic",
+  "timeLimitMinutes": 30,
+  "questions": [
+    {
+      "id": "ccar-f-agent-001",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "choose-an-orchestration-pattern",
+      "type": "single",
+      "prompt": "A self-contained original scenario...",
+      "options": ["a", "b", "c", "d"],
+      "correct": [1],
+      "explanation": "Why the decision fits and the alternatives do not.",
+      "references": ["certifications/claude/lessons/16-multi-agent-orchestration-and-delegation"]
+    }
+  ]
+}
+```
+
+`correct` is always an array. A `single` item has exactly one index; a
+`multiple` item has at least two. Questions must be original, map to a public
+objective, include a substantive explanation, and never reproduce or attempt
+to reconstruct confidential exam content. Practice percentages are raw scores,
+not Anthropic scaled scores, and the curriculum never guarantees a pass.
+Public certification pages and lesson context must also state that this is an
+independent community curriculum that is not affiliated with, endorsed by,
+sponsored by, or authorized by Anthropic.
+
+### AI-native certification learner mode
+
+When a user asks to choose, start, resume, study, practice, or assess a Claude
+certification, read and follow `skills/claude-certification/SKILL.md` before
+teaching. This applies to Codex and any other harness that reads `AGENTS.md`;
+Claude Code also discovers the matching wrapper under `.claude/skills/`.
+
+Treat the repository as an interactive tutor in learner mode. Read the selected
+track manifest, teach one route lesson at a time, run its real scenario and
+tests, require a learner-owned artifact under `learning-artifacts/`, grade the
+stored quiz or assessment, and preserve progress in
+`CLAUDE-CERTIFICATION.md`. Do not modify checked-in reference artifacts as
+learner work. The certification curriculum is delivered through GitHub and the
+website and is intentionally outside the book-generation pipeline.
+It remains English-only and is intentionally outside the machine-translation
+pipeline as well.
+
+### Manual contract
+
+A manual under `manuals/<id>/` explains one subject at one pinned version, built from offline captures and ranked sources. Read `manuals/AUTHORING.md` before writing one. `node scripts/audit_manuals.js` must report `TOTAL 0`: it checks section shape, prose limits, figure legibility, listing provenance, verbatim quotes, and capture drift. Commit one section per commit as `feat(manual/<id>): <section slug>`. Manuals stay outside the book and translation pipelines; their PDFs are release assets, never committed.
+
 ### code/
 
 - Runs end-to-end and exits 0 on the canonical command for the language.
@@ -118,7 +220,9 @@ Run locally before pushing:
 
 ```bash
 python3 scripts/audit_lessons.py
+python3 scripts/audit_certifications.py
 python3 scripts/check_readme_counts.py        # advisory — CI fixes on merge
+node --test site/test_manuals.js && node scripts/audit_manuals.js   # when manuals/ changes
 
 # For each lesson touched:
 cd phases/NN-phase/MM-lesson/code
@@ -155,6 +259,14 @@ CI gates (`.github/workflows/curriculum.yml`):
 | `glossary/terms.md`           | when introducing a term used by more than one lesson             |
 
 **Common bug**: if `grep -c 'tree/main/phases/NN-' site/data.js` is 0 after merge, the Phase NN README rows are plain text and missing the `[Title](phases/NN-...)` markdown link. `site/build.js` derives the URL from that link.
+
+### Social cards
+
+Every page shares its own 1200x630 card from `/og/<type>/<id>.png`, rendered by `api/og.js` with `lib/og-render.js`. The card text comes from the data that builds the page: `lesson-seo.json`, `certification-seo.json`, and `site/og-cards.json`, which `site/build.js` writes. Each card URL carries a content hash (`?v=`), so a changed title or count gets a new URL.
+
+- A new static page needs an entry in `PAGES` in `lib/og-cards.js` and an `og:image` tag for `/og/page/<id>.png`. The deploy step in `site/version-assets.js` writes the other image tags and the version.
+- The version also hashes `lib/og-render.js` and `lib/og-fonts/`, so a new layout or atlas gets new URLs without a manual bump.
+- `node scripts/build-og-fonts.js` rebuilds the glyph atlases with Chrome. Run it on a developer machine only, never in CI or the Vercel build.
 
 ---
 
@@ -215,4 +327,4 @@ gh pr create --title "feat(phase-NN/MM): add <slug>" --body "<5-line summary>"
 
 ---
 
-Last reviewed: 2026-05-27.
+Last reviewed: 2026-10-06.
