@@ -258,7 +258,7 @@ def train_alphazero(iters=15, episodes=40, n_sims=40, epochs=10,
         net.train(examples, epochs=epochs, rng=rng)
         if verbose:
             # Quick health check each iter: lose-rate vs random as X and O.
-            w, d, l = evaluate(net, RandomPlayer(rng), games=40, n_sims=n_sims, rng=rng)
+            w, d, l = evaluate(net, RandomPlayer(rng), games=40, n_sims=n_sims)
             print(f"  iter {it+1:2d}/{iters}  self-play examples={len(examples):5d}  "
                   f"vs-random  W={w:2d} D={d:2d} L={l:2d}")
     return net
@@ -348,7 +348,7 @@ def play_game(p_first, p_second):
         turn ^= 1
 
 
-def evaluate(net_or_player, opponent, games=100, n_sims=50, rng=None):
+def evaluate(net_or_player, opponent, games=100, n_sims=50):
     """Play `games` split evenly as first/second. Returns (wins, draws, losses)
     from the AlphaZero agent's perspective. Accepts a NetWrapper or a Player."""
     agent = net_or_player
@@ -383,15 +383,15 @@ def main():
     agent = AlphaZeroPlayer(net, n_sims=eval_sims)
 
     print(f"Final evaluation (200 games each, alternating who starts, {eval_sims} sims):")
-    w, d, l = evaluate(agent, RandomPlayer(rng), games=200, rng=rng)
+    w, d, l = evaluate(agent, RandomPlayer(rng), games=200)
     print(f"  vs RANDOM   : W={w:3d}  D={d:3d}  L={l:3d}")
-    wm, dm, lm = evaluate(agent, MinimaxPlayer(), games=200, rng=rng)
+    wm, dm, lm = evaluate(agent, MinimaxPlayer(), games=200)
     print(f"  vs MINIMAX  : W={wm:3d}  D={dm:3d}  L={lm:3d}   (perfect play -> all draws)")
 
     # Ablation: play the RAW policy net with NO search, vs random. Random reaches
     # off-principal-variation states; without MCTS to recover, the net slips.
     net_only = NetOnlyPlayer(net)
-    wn, dn, ln = evaluate(net_only, RandomPlayer(rng), games=200, rng=rng)
+    wn, dn, ln = evaluate(net_only, RandomPlayer(rng), games=200)
     print(f"  net-only vs RANDOM : W={wn:3d}  D={dn:3d}  L={ln:3d}   (no MCTS)")
 
     print("\n=== Correctness tests ===")
